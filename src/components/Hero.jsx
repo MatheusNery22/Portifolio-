@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const roles = ['Criativo', 'Designer', 'Desenvolvedor', 'Inovador']
+const roles = ['Social Media', 'Mídia Paga', 'Designer', 'Criador de LP\'s']
 
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0)
@@ -34,7 +34,6 @@ export default function Hero() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Background decoration */}
       <div style={{
         position: 'absolute',
         top: '20%',
@@ -125,12 +124,12 @@ export default function Hero() {
           <p style={{
             fontSize: '1.15rem',
             color: 'var(--text-secondary)',
-            maxWidth: '520px',
+            maxWidth: '560px',
             marginBottom: '48px',
             lineHeight: 1.8,
             animation: 'fadeInUp 0.8s ease 0.3s both',
           }}>
-            Transformo ideias em experiências digitais marcantes. Design, código e criatividade em harmonia para criar produtos que encantam.
+            Estratégia, criatividade e dados unidos para gerar resultados reais. Atuo com conteúdo, mídia paga, design e landing pages que convertem.
           </p>
 
           <div style={{
@@ -152,7 +151,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div style={{
         position: 'absolute',
         bottom: '32px',
