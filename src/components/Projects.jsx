@@ -34,6 +34,18 @@ const projects = [
     featured: true,
   },
   {
+    id: 'copa-brasil-cfc-cap',
+    title: 'Copa do Brasil — Arte de Jogo',
+    client: 'Conteúdo Esportivo',
+    description: 'Arte de confronto para Corinthians x Athletico Paranaense pela Copa do Brasil 2025. Composição com identidade dos dois clubes, troféu e atmosfera de grande jogo.',
+    tags: ['Design', 'Esporte', 'Social Media', 'Futebol'],
+    color: '#dc2626',
+    images: [
+      '/projects/copa-brasil-cfc-cap/1.jpg',
+    ],
+    featured: true,
+  },
+  {
     id: 'bicho-papao',
     title: 'Bicho Papão — Social Media',
     client: 'Petshop Bicho Papão',
