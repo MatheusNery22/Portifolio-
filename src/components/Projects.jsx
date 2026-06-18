@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const projects = [
   {
@@ -114,13 +114,14 @@ const projects = [
     description: 'LP B2B para captação de empresas, construtoras e microempreendedores. Estrutura completa: hero com CTA, segmentos atendidos, processo de compra em 5 etapas, benefícios, provas sociais com marcas parceiras, formulário e FAQ.',
     tags: ['Landing Page', 'B2B', 'Copy', 'Conversão'],
     color: '#7c3aed',
+    pdf: '/projects/landing-pages/torres-cabral-b2b.pdf',
     images: [
       '/projects/landing-pages/torres-cabral-b2b-1.jpg',
       '/projects/landing-pages/torres-cabral-b2b-2.jpg',
       '/projects/landing-pages/torres-cabral-b2b-3.jpg',
     ],
     featured: true,
-    comingSoon: false,
+    isLP: true,
   },
   {
     id: 'festa-tabernaculos',
@@ -174,6 +175,111 @@ const placeholders = [
     ),
   },
 ]
+
+function LPModal({ project, onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKey)
+    }
+  }, [onClose])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(0,0,0,0.92)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        overflowY: 'auto',
+        animation: 'fadeIn 0.2s ease',
+        padding: '60px 16px 40px',
+      }}
+    >
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'fixed', top: '16px', right: '16px',
+          background: 'rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '50%', width: '44px', height: '44px',
+          cursor: 'pointer', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1001, transition: 'all 0.2s',
+          backdropFilter: 'blur(8px)',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      {/* Header */}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ width: '100%', maxWidth: '900px' }}
+      >
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: '24px', flexWrap: 'wrap', gap: '12px',
+        }}>
+          <div>
+            <p style={{ color: project.color, fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
+              {project.client}
+            </p>
+            <h3 style={{ color: '#fff', fontFamily: "'Space Grotesk', sans-serif", fontSize: '1.5rem', fontWeight: 700 }}>
+              {project.title}
+            </h3>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {project.tags.map(t => (
+              <span key={t} style={{
+                padding: '5px 12px', borderRadius: '100px', fontSize: '0.75rem',
+                fontWeight: 600, background: `${project.color}22`, color: project.color,
+                border: `1px solid ${project.color}44`,
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* PDF embed ou imagens empilhadas */}
+        {project.pdf ? (
+          <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <iframe
+              src={project.pdf}
+              style={{ width: '100%', height: '85vh', border: 'none', display: 'block' }}
+              title={project.title}
+            />
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {project.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt={`${project.title} - ${i + 1}`}
+                style={{
+                  width: '100%', display: 'block', borderRadius: i === 0 ? '16px 16px 4px 4px' : i === project.images.length - 1 ? '4px 4px 16px 16px' : '4px',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', textAlign: 'center', marginTop: '20px' }}>
+          Pressione ESC ou clique fora para fechar
+        </p>
+      </div>
+    </div>
+  )
+}
 
 function ImageGallery({ images, title, comingSoon }) {
   const [current, setCurrent] = useState(0)
@@ -256,8 +362,12 @@ function ImageGallery({ images, title, comingSoon }) {
 }
 
 export default function Projects() {
+  const [modalProject, setModalProject] = useState(null)
+
   return (
     <section id="projects" style={{ background: 'var(--bg-secondary)' }}>
+      {modalProject && <LPModal project={modalProject} onClose={() => setModalProject(null)} />}
+
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
           <p className="section-label" style={{ justifyContent: 'center' }}>Portfólio</p>
@@ -278,6 +388,7 @@ export default function Projects() {
               border: '1px solid var(--border)',
               overflow: 'hidden',
               transition: 'all 0.3s ease',
+              cursor: p.isLP ? 'default' : 'default',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.borderColor = p.color
@@ -291,7 +402,46 @@ export default function Projects() {
                 display: 'grid',
                 gridTemplateColumns: '1.2fr 1fr',
               }} className="featured-grid">
-                <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} />
+                {p.isLP ? (
+                  <div
+                    onClick={() => setModalProject(p)}
+                    style={{
+                      position: 'relative', height: '320px', background: '#0a0a0f',
+                      overflow: 'hidden', cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => e.currentTarget.querySelector('.lp-overlay').style.opacity = '1'}
+                    onMouseLeave={e => e.currentTarget.querySelector('.lp-overlay').style.opacity = '0'}
+                  >
+                    {p.images[0] && (
+                      <img src={p.images[0]} alt={p.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                        onError={e => e.target.style.display = 'none'}
+                      />
+                    )}
+                    <div className="lp-overlay" style={{
+                      position: 'absolute', inset: 0,
+                      background: 'rgba(0,0,0,0.6)',
+                      display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', justifyContent: 'center',
+                      gap: '12px', opacity: 0, transition: 'opacity 0.3s',
+                    }}>
+                      <div style={{
+                        width: '56px', height: '56px', borderRadius: '50%',
+                        background: p.color, display: 'flex',
+                        alignItems: 'center', justifyContent: 'center',
+                        boxShadow: `0 0 30px ${p.color}66`,
+                      }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </div>
+                      <p style={{ color: '#fff', fontWeight: 700, fontSize: '0.9rem' }}>Ver Landing Page</p>
+                    </div>
+                  </div>
+                ) : (
+                  <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} />
+                )}
 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div style={{
@@ -334,7 +484,7 @@ export default function Projects() {
                     marginBottom: '20px',
                   }}>{p.description}</p>
 
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: p.isLP ? '20px' : '0' }}>
                     {p.tags.map(t => (
                       <span key={t} style={{
                         padding: '5px 12px',
@@ -347,6 +497,29 @@ export default function Projects() {
                       }}>{t}</span>
                     ))}
                   </div>
+
+                  {p.isLP && (
+                    <button
+                      onClick={() => setModalProject(p)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px',
+                        padding: '12px 24px', borderRadius: '8px',
+                        background: p.color, color: '#fff',
+                        border: 'none', cursor: 'pointer',
+                        fontSize: '0.9rem', fontWeight: 700,
+                        transition: 'all 0.2s',
+                        width: 'fit-content',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px ${p.color}66` }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Ver Landing Page
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
