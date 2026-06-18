@@ -280,7 +280,7 @@ export default function About() {
         }}>
           <InstagramCard
             handle="@sarajandirasp"
-            label="Trabalho"
+            label="Igreja"
             gradient="linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)"
             delay={0.1}
           />
