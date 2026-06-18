@@ -33,6 +33,20 @@ const projects = [
     ],
     featured: true,
   },
+  {
+    id: 'festa-tabernaculos',
+    title: 'Festa dos Tabernáculos',
+    client: 'Sara Jandira SP',
+    description: 'Identidade visual completa para o maior evento anual da Sara Jandira — 3 dias de celebração. Peças em feed, stories e thumbnail com tipografia editorial e atmosfera cinematográfica.',
+    tags: ['Social Media', 'Design', 'Evento', 'Identidade Visual'],
+    color: '#818cf8',
+    images: [
+      '/projects/festa-tabernaculos/1.jpg',
+      '/projects/festa-tabernaculos/2.jpg',
+      '/projects/festa-tabernaculos/3.jpg',
+    ],
+    featured: true,
+  },
 ]
 
 const placeholders = [
