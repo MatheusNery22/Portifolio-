@@ -34,6 +34,21 @@ const projects = [
     featured: true,
   },
   {
+    id: 'bicho-papao',
+    title: 'Bicho Papão — Social Media',
+    client: 'Petshop Bicho Papão',
+    description: 'Criação de carrossel para Instagram do petshop com foco em divulgar canal de vendas pelo WhatsApp. Design na identidade da marca (laranja e verde) com copywriting estratégico orientado à conversão.',
+    tags: ['Social Media', 'Design', 'Copywriting', 'Instagram'],
+    color: '#f97316',
+    images: [
+      '/projects/bicho-papao/1.jpg',
+      '/projects/bicho-papao/2.jpg',
+      '/projects/bicho-papao/3.jpg',
+      '/projects/bicho-papao/4.jpg',
+    ],
+    featured: true,
+  },
+  {
     id: 'copa-dna',
     title: 'Copa DNA — Identidade Visual',
     client: 'Evento Esportivo',
