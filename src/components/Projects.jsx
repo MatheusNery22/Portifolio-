@@ -414,37 +414,100 @@ export default function Projects() {
                   <div
                     onClick={() => setModalProject(p)}
                     style={{
-                      position: 'relative', height: '320px', background: '#0a0a0f',
+                      position: 'relative', height: '320px',
+                      background: `linear-gradient(135deg, ${p.color}18 0%, #0a0a0f 100%)`,
                       overflow: 'hidden', cursor: 'pointer',
-                    }}
-                    onMouseEnter={e => e.currentTarget.querySelector('.lp-overlay').style.opacity = '1'}
-                    onMouseLeave={e => e.currentTarget.querySelector('.lp-overlay').style.opacity = '0'}
-                  >
-                    {p.images[0] && (
-                      <img src={p.images[0]} alt={p.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-                        onError={e => e.target.style.display = 'none'}
-                      />
-                    )}
-                    <div className="lp-overlay" style={{
-                      position: 'absolute', inset: 0,
-                      background: 'rgba(0,0,0,0.6)',
                       display: 'flex', flexDirection: 'column',
                       alignItems: 'center', justifyContent: 'center',
-                      gap: '12px', opacity: 0, transition: 'opacity 0.3s',
+                      gap: '0',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.querySelector('.lp-btn').style.transform = 'scale(1.05)'
+                      e.currentTarget.querySelector('.lp-btn').style.boxShadow = `0 12px 40px ${p.color}66`
+                      e.currentTarget.querySelector('.lp-mockup').style.transform = 'translateY(-6px) scale(1.02)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.querySelector('.lp-btn').style.transform = 'scale(1)'
+                      e.currentTarget.querySelector('.lp-btn').style.boxShadow = `0 4px 20px ${p.color}44`
+                      e.currentTarget.querySelector('.lp-mockup').style.transform = 'translateY(0) scale(1)'
+                    }}
+                  >
+                    {/* Browser mockup */}
+                    <div className="lp-mockup" style={{
+                      width: '85%', borderRadius: '10px 10px 0 0',
+                      border: `1px solid ${p.color}44`,
+                      overflow: 'hidden',
+                      boxShadow: `0 8px 32px rgba(0,0,0,0.5)`,
+                      transition: 'transform 0.3s ease',
+                      position: 'absolute', bottom: 0,
                     }}>
+                      {/* Browser bar */}
                       <div style={{
-                        width: '56px', height: '56px', borderRadius: '50%',
-                        background: p.color, display: 'flex',
-                        alignItems: 'center', justifyContent: 'center',
-                        boxShadow: `0 0 30px ${p.color}66`,
+                        background: '#1a1a2e',
+                        padding: '8px 12px',
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        borderBottom: `1px solid ${p.color}33`,
                       }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
-                        </svg>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          {['#ff5f57','#ffbd2e','#28ca42'].map(c => (
+                            <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c }} />
+                          ))}
+                        </div>
+                        <div style={{
+                          flex: 1, background: 'rgba(255,255,255,0.07)',
+                          borderRadius: '4px', padding: '3px 10px',
+                          fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)',
+                          display: 'flex', alignItems: 'center', gap: '4px',
+                        }}>
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                          </svg>
+                          {p.client.toLowerCase().replace(/ /g, '')}.com.br
+                        </div>
                       </div>
-                      <p style={{ color: '#fff', fontWeight: 700, fontSize: '0.9rem' }}>Ver Landing Page</p>
+                      {/* Page content preview */}
+                      <div style={{
+                        height: '180px',
+                        background: `linear-gradient(180deg, ${p.color}22 0%, #0a0a0f 100%)`,
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        gap: '8px', padding: '16px',
+                      }}>
+                        <div style={{ width: '60%', height: '10px', background: `${p.color}66`, borderRadius: '4px' }} />
+                        <div style={{ width: '40%', height: '8px', background: 'rgba(255,255,255,0.15)', borderRadius: '4px' }} />
+                        <div style={{ width: '50%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }} />
+                        <div style={{
+                          marginTop: '8px',
+                          padding: '6px 20px',
+                          background: p.color,
+                          borderRadius: '4px',
+                          width: '40%', height: '26px',
+                        }} />
+                      </div>
+                    </div>
+
+                    {/* CTA badge sempre visível */}
+                    <div className="lp-btn" style={{
+                      position: 'absolute',
+                      top: '20px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: p.color,
+                      borderRadius: '100px',
+                      padding: '8px 18px',
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      color: '#fff', fontWeight: 700, fontSize: '0.82rem',
+                      whiteSpace: 'nowrap',
+                      boxShadow: `0 4px 20px ${p.color}44`,
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer',
+                      zIndex: 2,
+                    }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      Clique para ver a LP
                     </div>
                   </div>
                 ) : (
