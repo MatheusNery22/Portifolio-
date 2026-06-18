@@ -115,6 +115,7 @@ const projects = [
     tags: ['Landing Page', 'B2B', 'Copy', 'Conversão'],
     color: '#7c3aed',
     pdf: '/projects/landing-pages/FireShot Capture 003 - Torres Cabral B2B - Soluções para Empresas e Construtoras_ - [empresas.torrescabral.com.br].pdf',
+    cover: '/projects/landing-pages/image-1781815762655.webp',
     images: [],
     featured: true,
     isLP: true,
@@ -127,6 +128,7 @@ const projects = [
     tags: ['Landing Page', 'Ofertas', 'Live', 'Conversão'],
     color: '#f97316',
     pdf: '/projects/landing-pages/FireShot Capture 004 - 🔴 LIVE TORRES CABRAL - [ofertastorrescabral.com].pdf',
+    cover: '/projects/landing-pages/image-1781815809749.webp',
     images: [],
     featured: true,
     isLP: true,
@@ -623,49 +625,29 @@ export default function Projects() {
                       e.currentTarget.querySelector('.lp-cta').style.boxShadow = `0 6px 24px ${p.color}55`
                     }}
                   >
-                    {/* Cloud sky background */}
+                    {/* Cover image or fallback gradient */}
                     <div className="lp-cover-inner" style={{
                       position: 'absolute', inset: 0,
-                      background: 'linear-gradient(180deg, #87CEEB 0%, #b8e0f5 40%, #d4eef8 70%, #e8f5fc 100%)',
+                      background: `linear-gradient(135deg, ${p.color}22 0%, #0a0a0f 100%)`,
                       transition: 'transform 0.5s ease',
                     }}>
-                      {/* SVG Clouds */}
-                      <svg viewBox="0 0 800 320" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid slice">
-                        {/* Large cloud center */}
-                        <ellipse cx="400" cy="200" rx="180" ry="100" fill="white" opacity="0.95"/>
-                        <ellipse cx="340" cy="190" rx="110" ry="80" fill="white" opacity="0.9"/>
-                        <ellipse cx="460" cy="185" rx="130" ry="85" fill="white" opacity="0.9"/>
-                        <ellipse cx="390" cy="165" rx="100" ry="70" fill="white" opacity="1"/>
-                        <ellipse cx="430" cy="155" rx="85" ry="65" fill="white" opacity="1"/>
-                        <ellipse cx="360" cy="160" rx="90" ry="65" fill="white" opacity="1"/>
-                        {/* Small cloud left */}
-                        <ellipse cx="100" cy="230" rx="80" ry="45" fill="white" opacity="0.8"/>
-                        <ellipse cx="75" cy="220" rx="55" ry="38" fill="white" opacity="0.75"/>
-                        <ellipse cx="125" cy="215" rx="60" ry="38" fill="white" opacity="0.75"/>
-                        {/* Small cloud right */}
-                        <ellipse cx="700" cy="200" rx="90" ry="50" fill="white" opacity="0.8"/>
-                        <ellipse cx="670" cy="190" rx="60" ry="40" fill="white" opacity="0.75"/>
-                        <ellipse cx="730" cy="188" rx="65" ry="40" fill="white" opacity="0.75"/>
-                      </svg>
+                      {p.cover && (
+                        <img
+                          src={p.cover}
+                          alt={p.title}
+                          style={{
+                            width: '100%', height: '100%',
+                            objectFit: 'cover', objectPosition: 'top',
+                            display: 'block',
+                          }}
+                        />
+                      )}
 
                       {/* Dark overlay at bottom for text */}
                       <div style={{
-                        position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%',
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
+                        position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
                       }} />
-
-                      {/* Top colored dot/logo */}
-                      <div style={{
-                        position: 'absolute', top: '18px', left: '18px',
-                        width: '32px', height: '32px', borderRadius: '50%',
-                        background: p.color,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: `0 4px 12px ${p.color}66`,
-                      }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-                        </svg>
-                      </div>
 
                       {/* Title overlay at bottom */}
                       <div style={{
