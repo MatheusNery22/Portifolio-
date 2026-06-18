@@ -34,6 +34,18 @@ const projects = [
     featured: true,
   },
   {
+    id: 'copa-dna',
+    title: 'Copa DNA — Identidade Visual',
+    client: 'Evento Esportivo',
+    description: 'Criação do MIV (Manual de Identidade Visual) para evento de futebol voltado ao público jovem. Logo, paleta de cores (amarelo, azul, preto e branco) e elementos gráficos com pegada urbana e street art.',
+    tags: ['Branding', 'MIV', 'Design', 'Identidade Visual'],
+    color: '#eab308',
+    images: [
+      '/projects/copa-dna/1.jpg',
+    ],
+    featured: true,
+  },
+  {
     id: 'conteudo-ia',
     title: 'IA no Marketing — Conteúdo Próprio',
     client: '@matheusneryoficial',
