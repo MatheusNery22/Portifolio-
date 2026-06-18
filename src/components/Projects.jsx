@@ -322,7 +322,7 @@ function ImageGallery({ images, title, comingSoon, onImageClick }) {
       <img
         src={images[current]}
         alt={`${title} - ${current + 1}`}
-        onClick={() => onImageClick && onImageClick(images[current])}
+        onClick={() => onImageClick && onImageClick(images[current], current)}
         style={{
           width: '100%',
           height: '100%',
@@ -392,72 +392,184 @@ function ImageGallery({ images, title, comingSoon, onImageClick }) {
   )
 }
 
-function ImageLightbox({ src, alt, onClose }) {
+function ImageLightbox({ images, startIndex, title, onClose }) {
+  const [current, setCurrent] = useState(startIndex)
+  const [dragStartX, setDragStartX] = useState(null)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [animDir, setAnimDir] = useState(null) // 'left' | 'right' | null
+
+  const goTo = useCallback((idx) => {
+    if (idx < 0 || idx >= images.length) return
+    setAnimDir(idx > current ? 'left' : 'right')
+    setCurrent(idx)
+    setTimeout(() => setAnimDir(null), 280)
+  }, [current, images.length])
+
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    const handleKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') goTo(current + 1)
+      if (e.key === 'ArrowLeft') goTo(current - 1)
+    }
     window.addEventListener('keydown', handleKey)
     return () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKey)
     }
-  }, [onClose])
+  }, [onClose, goTo, current])
+
+  const onDragStart = (clientX) => { setDragStartX(clientX); setIsDragging(true); setDragOffset(0) }
+  const onDragMove = (clientX) => { if (!isDragging) return; setDragOffset(clientX - dragStartX) }
+  const onDragEnd = () => {
+    if (Math.abs(dragOffset) > 60) {
+      if (dragOffset < 0) goTo(current + 1)
+      else goTo(current - 1)
+    }
+    setDragStartX(null); setDragOffset(0); setIsDragging(false)
+  }
 
   return (
     <div
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 2000,
-        background: 'rgba(0,0,0,0.95)',
+        background: 'rgba(0,0,0,0.97)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         animation: 'fadeIn 0.2s ease',
-        padding: '24px',
-        cursor: 'zoom-out',
+        userSelect: 'none',
       }}
     >
-      <button
-        onClick={onClose}
-        style={{
-          position: 'fixed', top: '16px', right: '16px',
-          background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '50%', width: '44px', height: '44px',
-          cursor: 'pointer', color: '#fff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 2001, backdropFilter: 'blur(8px)',
-        }}
-      >
+      {/* Close */}
+      <button onClick={onClose} style={{
+        position: 'fixed', top: '16px', right: '16px',
+        background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '50%', width: '44px', height: '44px',
+        cursor: 'pointer', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 2001, backdropFilter: 'blur(8px)',
+      }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
-      <img
-        src={src}
-        alt={alt}
+
+      {/* Counter */}
+      <div style={{
+        position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(255,255,255,0.1)', borderRadius: '100px',
+        padding: '5px 14px', color: '#fff', fontSize: '0.8rem', fontWeight: 600,
+        backdropFilter: 'blur(8px)', zIndex: 2001,
+      }}>
+        {current + 1} / {images.length}
+      </div>
+
+      {/* Prev arrow */}
+      {current > 0 && (
+        <button
+          onClick={e => { e.stopPropagation(); goTo(current - 1) }}
+          style={{
+            position: 'fixed', left: '16px', top: '50%', transform: 'translateY(-50%)',
+            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%', width: '48px', height: '48px',
+            cursor: 'pointer', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2001, backdropFilter: 'blur(8px)', transition: 'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+      )}
+
+      {/* Next arrow */}
+      {current < images.length - 1 && (
+        <button
+          onClick={e => { e.stopPropagation(); goTo(current + 1) }}
+          style={{
+            position: 'fixed', right: '16px', top: '50%', transform: 'translateY(-50%)',
+            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50%', width: '48px', height: '48px',
+            cursor: 'pointer', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2001, backdropFilter: 'blur(8px)', transition: 'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      )}
+
+      {/* Image drag area */}
+      <div
         onClick={e => e.stopPropagation()}
+        onMouseDown={e => onDragStart(e.clientX)}
+        onMouseMove={e => onDragMove(e.clientX)}
+        onMouseUp={onDragEnd}
+        onMouseLeave={onDragEnd}
+        onTouchStart={e => onDragStart(e.touches[0].clientX)}
+        onTouchMove={e => onDragMove(e.touches[0].clientX)}
+        onTouchEnd={onDragEnd}
         style={{
-          maxWidth: '100%', maxHeight: '90vh',
-          objectFit: 'contain',
-          borderRadius: '12px',
-          boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
-          cursor: 'default',
-          animation: 'fadeInUp 0.25s ease',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '70px 80px 60px',
+          width: '100%', height: '100%',
+          cursor: isDragging ? 'grabbing' : 'grab',
         }}
-      />
-      <p style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>
-        ESC para fechar
-      </p>
+      >
+        <img
+          src={images[current]}
+          alt={`${title} - ${current + 1}`}
+          draggable={false}
+          style={{
+            maxWidth: '100%', maxHeight: '100%',
+            objectFit: 'contain',
+            borderRadius: '12px',
+            boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+            transform: `translateX(${dragOffset}px)`,
+            transition: isDragging ? 'none' : 'transform 0.28s cubic-bezier(0.4,0,0.2,1)',
+            animation: animDir ? `slide-${animDir} 0.28s cubic-bezier(0.4,0,0.2,1)` : 'fadeInUp 0.25s ease',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
+
+      {/* Dots */}
+      {images.length > 1 && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: '8px', zIndex: 2001,
+        }}>
+          {images.map((_, i) => (
+            <button key={i} onClick={e => { e.stopPropagation(); goTo(i) }} style={{
+              width: i === current ? '24px' : '8px', height: '8px',
+              borderRadius: '4px', border: 'none', cursor: 'pointer',
+              background: i === current ? '#fff' : 'rgba(255,255,255,0.35)',
+              transition: 'all 0.3s', padding: 0,
+            }} />
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slide-left { from { opacity: 0.5; transform: translateX(60px) } to { opacity: 1; transform: translateX(0) } }
+        @keyframes slide-right { from { opacity: 0.5; transform: translateX(-60px) } to { opacity: 1; transform: translateX(0) } }
+      `}</style>
     </div>
   )
 }
 
 export default function Projects() {
   const [modalProject, setModalProject] = useState(null)
-  const [lightboxSrc, setLightboxSrc] = useState(null)
+  const [lightbox, setLightbox] = useState(null) // { images, index, title }
 
   return (
     <section id="projects" style={{ background: 'var(--bg-secondary)' }}>
       {modalProject && <LPModal project={modalProject} onClose={() => setModalProject(null)} />}
-      {lightboxSrc && <ImageLightbox src={lightboxSrc} alt="Projeto" onClose={() => setLightboxSrc(null)} />}
+      {lightbox && <ImageLightbox images={lightbox.images} startIndex={lightbox.index} title={lightbox.title} onClose={() => setLightbox(null)} />}
 
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
@@ -608,7 +720,7 @@ export default function Projects() {
                     </div>
                   </div>
                 ) : (
-                  <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} onImageClick={src => setLightboxSrc(src)} />
+                  <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} onImageClick={(src, idx) => setLightbox({ images: p.images, index: idx, title: p.title })} />
                 )}
 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
