@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const projects = [
   {
@@ -289,8 +289,9 @@ function LPModal({ project, onClose }) {
   )
 }
 
-function ImageGallery({ images, title, comingSoon }) {
+function ImageGallery({ images, title, comingSoon, onImageClick }) {
   const [current, setCurrent] = useState(0)
+  const [hovered, setHovered] = useState(false)
 
   if (comingSoon || images.length === 0) {
     return (
@@ -313,19 +314,41 @@ function ImageGallery({ images, title, comingSoon }) {
   }
 
   return (
-    <div style={{ position: 'relative', height: '320px', background: '#0a0a0f', overflow: 'hidden' }}>
+    <div
+      style={{ position: 'relative', height: '320px', background: '#0a0a0f', overflow: 'hidden', cursor: 'zoom-in' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <img
         src={images[current]}
         alt={`${title} - ${current + 1}`}
+        onClick={() => onImageClick && onImageClick(images[current])}
         style={{
           width: '100%',
           height: '100%',
           objectFit: 'contain',
           display: 'block',
-          transition: 'opacity 0.3s',
+          transition: 'transform 0.3s ease, opacity 0.3s',
+          transform: hovered ? 'scale(1.03)' : 'scale(1)',
         }}
         onError={e => { e.target.style.display = 'none' }}
       />
+
+      {/* Zoom hint overlay */}
+      {hovered && (
+        <div style={{
+          position: 'absolute', top: '12px', right: '12px',
+          background: 'rgba(0,0,0,0.7)', borderRadius: '8px',
+          padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '5px',
+          backdropFilter: 'blur(4px)', pointerEvents: 'none',
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+          <span style={{ color: '#fff', fontSize: '0.7rem', fontWeight: 600 }}>Ampliar</span>
+        </div>
+      )}
 
       {images.length > 1 && (
         <>
@@ -369,12 +392,72 @@ function ImageGallery({ images, title, comingSoon }) {
   )
 }
 
+function ImageLightbox({ src, alt, onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKey)
+    }
+  }, [onClose])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 2000,
+        background: 'rgba(0,0,0,0.95)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        animation: 'fadeIn 0.2s ease',
+        padding: '24px',
+        cursor: 'zoom-out',
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          position: 'fixed', top: '16px', right: '16px',
+          background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '50%', width: '44px', height: '44px',
+          cursor: 'pointer', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 2001, backdropFilter: 'blur(8px)',
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <img
+        src={src}
+        alt={alt}
+        onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '100%', maxHeight: '90vh',
+          objectFit: 'contain',
+          borderRadius: '12px',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+          cursor: 'default',
+          animation: 'fadeInUp 0.25s ease',
+        }}
+      />
+      <p style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>
+        ESC para fechar
+      </p>
+    </div>
+  )
+}
+
 export default function Projects() {
   const [modalProject, setModalProject] = useState(null)
+  const [lightboxSrc, setLightboxSrc] = useState(null)
 
   return (
     <section id="projects" style={{ background: 'var(--bg-secondary)' }}>
       {modalProject && <LPModal project={modalProject} onClose={() => setModalProject(null)} />}
+      {lightboxSrc && <ImageLightbox src={lightboxSrc} alt="Projeto" onClose={() => setLightboxSrc(null)} />}
 
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
@@ -415,93 +498,107 @@ export default function Projects() {
                     onClick={() => setModalProject(p)}
                     style={{
                       position: 'relative', height: '320px',
-                      background: `linear-gradient(135deg, ${p.color}18 0%, #0a0a0f 100%)`,
                       overflow: 'hidden', cursor: 'pointer',
-                      display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', justifyContent: 'center',
-                      gap: '0',
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.querySelector('.lp-btn').style.transform = 'scale(1.05)'
-                      e.currentTarget.querySelector('.lp-btn').style.boxShadow = `0 12px 40px ${p.color}66`
-                      e.currentTarget.querySelector('.lp-mockup').style.transform = 'translateY(-6px) scale(1.02)'
+                      e.currentTarget.querySelector('.lp-cover-inner').style.transform = 'scale(1.04)'
+                      e.currentTarget.querySelector('.lp-cta').style.transform = 'translateX(-50%) translateY(-3px)'
+                      e.currentTarget.querySelector('.lp-cta').style.boxShadow = `0 16px 40px ${p.color}77`
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.querySelector('.lp-btn').style.transform = 'scale(1)'
-                      e.currentTarget.querySelector('.lp-btn').style.boxShadow = `0 4px 20px ${p.color}44`
-                      e.currentTarget.querySelector('.lp-mockup').style.transform = 'translateY(0) scale(1)'
+                      e.currentTarget.querySelector('.lp-cover-inner').style.transform = 'scale(1)'
+                      e.currentTarget.querySelector('.lp-cta').style.transform = 'translateX(-50%) translateY(0)'
+                      e.currentTarget.querySelector('.lp-cta').style.boxShadow = `0 6px 24px ${p.color}55`
                     }}
                   >
-                    {/* Browser mockup */}
-                    <div className="lp-mockup" style={{
-                      width: '85%', borderRadius: '10px 10px 0 0',
-                      border: `1px solid ${p.color}44`,
-                      overflow: 'hidden',
-                      boxShadow: `0 8px 32px rgba(0,0,0,0.5)`,
-                      transition: 'transform 0.3s ease',
-                      position: 'absolute', bottom: 0,
+                    {/* Cloud sky background */}
+                    <div className="lp-cover-inner" style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(180deg, #87CEEB 0%, #b8e0f5 40%, #d4eef8 70%, #e8f5fc 100%)',
+                      transition: 'transform 0.5s ease',
                     }}>
-                      {/* Browser bar */}
+                      {/* SVG Clouds */}
+                      <svg viewBox="0 0 800 320" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid slice">
+                        {/* Large cloud center */}
+                        <ellipse cx="400" cy="200" rx="180" ry="100" fill="white" opacity="0.95"/>
+                        <ellipse cx="340" cy="190" rx="110" ry="80" fill="white" opacity="0.9"/>
+                        <ellipse cx="460" cy="185" rx="130" ry="85" fill="white" opacity="0.9"/>
+                        <ellipse cx="390" cy="165" rx="100" ry="70" fill="white" opacity="1"/>
+                        <ellipse cx="430" cy="155" rx="85" ry="65" fill="white" opacity="1"/>
+                        <ellipse cx="360" cy="160" rx="90" ry="65" fill="white" opacity="1"/>
+                        {/* Small cloud left */}
+                        <ellipse cx="100" cy="230" rx="80" ry="45" fill="white" opacity="0.8"/>
+                        <ellipse cx="75" cy="220" rx="55" ry="38" fill="white" opacity="0.75"/>
+                        <ellipse cx="125" cy="215" rx="60" ry="38" fill="white" opacity="0.75"/>
+                        {/* Small cloud right */}
+                        <ellipse cx="700" cy="200" rx="90" ry="50" fill="white" opacity="0.8"/>
+                        <ellipse cx="670" cy="190" rx="60" ry="40" fill="white" opacity="0.75"/>
+                        <ellipse cx="730" cy="188" rx="65" ry="40" fill="white" opacity="0.75"/>
+                      </svg>
+
+                      {/* Dark overlay at bottom for text */}
                       <div style={{
-                        background: '#1a1a2e',
-                        padding: '8px 12px',
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        borderBottom: `1px solid ${p.color}33`,
+                        position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%',
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
+                      }} />
+
+                      {/* Top colored dot/logo */}
+                      <div style={{
+                        position: 'absolute', top: '18px', left: '18px',
+                        width: '32px', height: '32px', borderRadius: '50%',
+                        background: p.color,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: `0 4px 12px ${p.color}66`,
                       }}>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                          {['#ff5f57','#ffbd2e','#28ca42'].map(c => (
-                            <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c }} />
-                          ))}
-                        </div>
-                        <div style={{
-                          flex: 1, background: 'rgba(255,255,255,0.07)',
-                          borderRadius: '4px', padding: '3px 10px',
-                          fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)',
-                          display: 'flex', alignItems: 'center', gap: '4px',
-                        }}>
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-                          </svg>
-                          {p.client.toLowerCase().replace(/ /g, '')}.com.br
-                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                        </svg>
                       </div>
-                      {/* Page content preview */}
+
+                      {/* Title overlay at bottom */}
                       <div style={{
-                        height: '180px',
-                        background: `linear-gradient(180deg, ${p.color}22 0%, #0a0a0f 100%)`,
-                        display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center',
-                        gap: '8px', padding: '16px',
+                        position: 'absolute', bottom: '48px', left: '20px', right: '20px',
                       }}>
-                        <div style={{ width: '60%', height: '10px', background: `${p.color}66`, borderRadius: '4px' }} />
-                        <div style={{ width: '40%', height: '8px', background: 'rgba(255,255,255,0.15)', borderRadius: '4px' }} />
-                        <div style={{ width: '50%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }} />
-                        <div style={{
-                          marginTop: '8px',
-                          padding: '6px 20px',
-                          background: p.color,
-                          borderRadius: '4px',
-                          width: '40%', height: '26px',
-                        }} />
+                        <p style={{
+                          color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem',
+                          fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+                          marginBottom: '4px',
+                        }}>{p.client}</p>
+                        <p style={{
+                          color: '#fff', fontFamily: "'Space Grotesk', sans-serif",
+                          fontSize: '1.1rem', fontWeight: 800, lineHeight: 1.2,
+                          textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                        }}>{p.title}</p>
+                      </div>
+
+                      {/* Tags row */}
+                      <div style={{
+                        position: 'absolute', bottom: '14px', left: '20px',
+                        display: 'flex', gap: '6px',
+                      }}>
+                        {p.tags.slice(0, 3).map(t => (
+                          <span key={t} style={{
+                            padding: '2px 8px', borderRadius: '100px',
+                            fontSize: '0.62rem', fontWeight: 700,
+                            background: `${p.color}cc`, color: '#fff',
+                          }}>{t}</span>
+                        ))}
                       </div>
                     </div>
 
-                    {/* CTA badge sempre visível */}
-                    <div className="lp-btn" style={{
-                      position: 'absolute',
-                      top: '20px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
+                    {/* CTA badge centralizado no topo */}
+                    <div className="lp-cta" style={{
+                      position: 'absolute', top: '18px',
+                      left: '50%', transform: 'translateX(-50%)',
                       background: p.color,
                       borderRadius: '100px',
                       padding: '8px 18px',
-                      display: 'flex', alignItems: 'center', gap: '8px',
-                      color: '#fff', fontWeight: 700, fontSize: '0.82rem',
+                      display: 'flex', alignItems: 'center', gap: '7px',
+                      color: '#fff', fontWeight: 700, fontSize: '0.8rem',
                       whiteSpace: 'nowrap',
-                      boxShadow: `0 4px 20px ${p.color}44`,
+                      boxShadow: `0 6px 24px ${p.color}55`,
                       transition: 'all 0.3s ease',
-                      cursor: 'pointer',
-                      zIndex: 2,
+                      zIndex: 3,
                     }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -511,7 +608,7 @@ export default function Projects() {
                     </div>
                   </div>
                 ) : (
-                  <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} />
+                  <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} onImageClick={src => setLightboxSrc(src)} />
                 )}
 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
