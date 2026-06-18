@@ -89,6 +89,36 @@ const projects = [
     featured: true,
   },
   {
+    id: 'arena-flow-antecipacao',
+    title: 'Arena Flow — Antecipação',
+    client: 'Sara Jandira SP',
+    description: 'Série de peças de antecipação para o Arena Flow: contagem regressiva, anúncio de pregador convidado e telões para uso no evento. Identidade visual consistente gerando expectativa no público.',
+    tags: ['Social Media', 'Design', 'Contagem Regressiva', 'Telão'],
+    color: '#06b6d4',
+    images: [
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO.png',
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO FALTAM 3 DIAS.png',
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO FALTAM 2 DIAS_.png',
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO É AMANHÃ.png',
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO É HOJE.png',
+      '/projects/arena-flow-antecipacao/FEED - DIVULGAÇÃO - GABRIEL DUARTE.png',
+      '/projects/arena-flow-antecipacao/TELÃO - DÍZIMOS E OFERTAS.png',
+      '/projects/arena-flow-antecipacao/TELÃO - ESPAÇO ABERTO PARA VERSÍCULOS.png',
+    ],
+    featured: true,
+  },
+  {
+    id: 'landing-pages',
+    title: 'Landing Pages',
+    client: 'Múltiplos Clientes',
+    description: 'Criação de landing pages focadas em conversão com copywriting estratégico, design responsivo e integração com ferramentas de automação e CRM.',
+    tags: ['Landing Page', 'Copy', 'Design', 'Conversão'],
+    color: '#7c3aed',
+    images: [],
+    featured: true,
+    comingSoon: true,
+  },
+  {
     id: 'festa-tabernaculos',
     title: 'Festa dos Tabernáculos',
     client: 'Sara Jandira SP',
@@ -141,18 +171,38 @@ const placeholders = [
   },
 ]
 
-function ImageGallery({ images, title }) {
+function ImageGallery({ images, title, comingSoon }) {
   const [current, setCurrent] = useState(0)
 
+  if (comingSoon || images.length === 0) {
+    return (
+      <div style={{
+        height: '320px',
+        background: 'linear-gradient(135deg, #7c3aed22, #7c3aed08)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+        borderRight: '1px solid var(--border)',
+      }}>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>Em breve</p>
+      </div>
+    )
+  }
+
   return (
-    <div style={{ position: 'relative', height: '280px', background: '#000', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: '320px', background: '#0a0a0f', overflow: 'hidden' }}>
       <img
         src={images[current]}
         alt={`${title} - ${current + 1}`}
         style={{
           width: '100%',
           height: '100%',
-          objectFit: 'cover',
+          objectFit: 'contain',
           display: 'block',
           transition: 'opacity 0.3s',
         }}
@@ -237,7 +287,7 @@ export default function Projects() {
                 display: 'grid',
                 gridTemplateColumns: '1.2fr 1fr',
               }} className="featured-grid">
-                <ImageGallery images={p.images} title={p.title} />
+                <ImageGallery images={p.images} title={p.title} comingSoon={p.comingSoon} />
 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div style={{
