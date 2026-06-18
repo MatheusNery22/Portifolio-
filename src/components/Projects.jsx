@@ -674,126 +674,158 @@ function ReelEmbed({ reel, featured = false }) {
 
   return (
     <div style={{
-      background: 'var(--bg-card)',
-      borderRadius: '20px',
-      border: '1px solid var(--border)',
-      overflow: 'hidden',
-      transition: 'all 0.35s ease',
       display: 'flex',
       flexDirection: 'column',
+      alignItems: 'center',
+      gap: '16px',
       height: '100%',
-    }}
-    onMouseEnter={e => {
-      e.currentTarget.style.borderColor = reel.color
-      e.currentTarget.style.boxShadow = `0 24px 64px ${reel.color}44`
-      e.currentTarget.style.transform = 'translateY(-5px)'
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.borderColor = 'var(--border)'
-      e.currentTarget.style.boxShadow = 'none'
-      e.currentTarget.style.transform = 'translateY(0)'
     }}>
-      {/* Embed area */}
+      {/* Phone mockup frame */}
       <div style={{
         position: 'relative',
-        paddingTop: '177.77%',
-        background: '#080810',
-        flexShrink: 0,
+        width: '100%',
+        maxWidth: featured ? '260px' : '220px',
+        margin: '0 auto',
+        transition: 'transform 0.35s ease, filter 0.35s ease',
+        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)'
+        e.currentTarget.style.filter = `drop-shadow(0 30px 50px ${reel.color}55)`
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = 'translateY(0) scale(1)'
+        e.currentTarget.style.filter = 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))'
       }}>
-        {/* Loading state */}
-        {!loaded && (
+
+        {/* Phone shell */}
+        <div style={{
+          position: 'relative',
+          borderRadius: '36px',
+          background: 'linear-gradient(160deg, #1e1e2e, #12121f)',
+          border: '2px solid rgba(255,255,255,0.1)',
+          padding: '12px 8px',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05)',
+          overflow: 'hidden',
+        }}>
+          {/* Notch */}
           <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '16px',
-            background: `linear-gradient(160deg, ${reel.color}18 0%, #080810 100%)`,
+            position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
+            width: '60px', height: '6px', borderRadius: '3px',
+            background: 'rgba(255,255,255,0.15)', zIndex: 10,
+          }} />
+
+          {/* Screen — clips the iframe showing only the video */}
+          <div style={{
+            borderRadius: '28px',
+            overflow: 'hidden',
+            position: 'relative',
+            background: '#000',
           }}>
-            {/* Instagram gradient ring */}
-            <div style={{ position: 'relative', width: '56px', height: '56px' }}>
-              <div style={{
-                width: '56px', height: '56px', borderRadius: '50%',
-                background: `conic-gradient(from 0deg, #833ab4, #fd1d1d, #fcb045, #833ab4)`,
-                animation: 'spin 1.2s linear infinite',
-              }} />
-              <div style={{
-                position: 'absolute', inset: '4px', borderRadius: '50%',
-                background: '#080810',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
-                  <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
-                  <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
-                </svg>
-              </div>
+            {/* Crop wrapper: hides Instagram header (~13%) and footer (~15%) */}
+            <div style={{
+              position: 'relative',
+              paddingTop: '177.77%',
+              overflow: 'hidden',
+            }}>
+              {/* Loading state */}
+              {!loaded && (
+                <div style={{
+                  position: 'absolute', inset: 0, zIndex: 2,
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center', gap: '14px',
+                  background: `linear-gradient(160deg, ${reel.color}25 0%, #080810 100%)`,
+                }}>
+                  <div style={{ position: 'relative', width: '44px', height: '44px' }}>
+                    <div style={{
+                      width: '44px', height: '44px', borderRadius: '50%',
+                      background: 'conic-gradient(from 0deg, #833ab4, #fd1d1d, #fcb045, #833ab4)',
+                      animation: 'spin 1.2s linear infinite',
+                    }} />
+                    <div style={{
+                      position: 'absolute', inset: '4px', borderRadius: '50%',
+                      background: '#080810',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
+                        <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
+                        <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem' }}>Carregando...</p>
+                </div>
+              )}
+
+              {/* iframe shifted up to hide Instagram header, scaled to hide footer */}
+              <iframe
+                src={`https://www.instagram.com/reel/${reel.code}/embed/`}
+                style={{
+                  position: 'absolute',
+                  top: '-13%',
+                  left: 0,
+                  width: '100%',
+                  height: '128%',
+                  border: 'none',
+                  opacity: loaded ? 1 : 0,
+                  transition: 'opacity 0.5s ease',
+                  pointerEvents: loaded ? 'auto' : 'none',
+                }}
+                allowFullScreen
+                scrolling="no"
+                onLoad={() => setLoaded(true)}
+                title={reel.title}
+              />
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', fontWeight: 500 }}>Carregando reel...</p>
           </div>
-        )}
-        <iframe
-          src={`https://www.instagram.com/reel/${reel.code}/embed/`}
-          style={{
-            position: 'absolute', top: 0, left: 0,
-            width: '100%', height: '100%',
-            border: 'none',
-            opacity: loaded ? 1 : 0,
-            transition: 'opacity 0.5s ease',
-          }}
-          allowFullScreen
-          scrolling="no"
-          onLoad={() => setLoaded(true)}
-          title={reel.title}
-        />
+
+          {/* Home indicator */}
+          <div style={{
+            width: '40px', height: '4px', borderRadius: '2px',
+            background: 'rgba(255,255,255,0.2)',
+            margin: '8px auto 0',
+          }} />
+        </div>
       </div>
 
-      {/* Info footer */}
-      <div style={{
-        padding: '16px',
-        background: 'var(--bg-card)',
-        borderTop: `1px solid ${reel.color}22`,
-        flex: 1,
-        display: 'flex', flexDirection: 'column', gap: '10px',
-      }}>
-        {/* Title */}
+      {/* Info below phone */}
+      <div style={{ textAlign: 'center', width: '100%' }}>
         <p style={{
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 700,
-          fontSize: featured ? '1rem' : '0.9rem',
+          fontSize: featured ? '0.95rem' : '0.82rem',
           color: 'var(--text-primary)',
           lineHeight: 1.3,
+          marginBottom: '8px',
         }}>{reel.title}</p>
-
-        {/* Tags + link row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-            {reel.tags.slice(0, 2).map(t => (
-              <span key={t} style={{
-                padding: '3px 9px', borderRadius: '100px',
-                fontSize: '0.68rem', fontWeight: 700,
-                background: `${reel.color}22`, color: reel.color,
-                border: `1px solid ${reel.color}44`,
-              }}>{t}</span>
-            ))}
-          </div>
-          <a
-            href={`https://www.instagram.com/reel/${reel.code}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              color: 'var(--text-muted)', fontSize: '0.72rem', fontWeight: 600,
-              textDecoration: 'none', flexShrink: 0,
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = reel.color}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-            </svg>
-            Abrir
-          </a>
+        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '8px' }}>
+          {reel.tags.slice(0, 2).map(t => (
+            <span key={t} style={{
+              padding: '2px 8px', borderRadius: '100px',
+              fontSize: '0.65rem', fontWeight: 700,
+              background: `${reel.color}22`, color: reel.color,
+              border: `1px solid ${reel.color}44`,
+            }}>{t}</span>
+          ))}
         </div>
+        <a
+          href={`https://www.instagram.com/reel/${reel.code}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 600,
+            textDecoration: 'none', transition: 'color 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = reel.color}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+          </svg>
+          Ver no Instagram
+        </a>
       </div>
     </div>
   )
@@ -857,26 +889,17 @@ function ReelsSection() {
         </a>
       </div>
 
-      {/* Layout: featured + grid */}
+      {/* Grid de todos os reels */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 2fr',
-        gap: '24px',
+        gridTemplateColumns: 'repeat(5, 1fr)',
+        gap: '32px',
         alignItems: 'start',
-      }} className="reels-layout">
-        {/* Featured reel */}
-        <ReelEmbed reel={featured} featured />
-
-        {/* Grid dos outros */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '24px',
-        }} className="reels-grid">
-          {rest.map(r => (
-            <ReelEmbed key={r.code} reel={r} />
-          ))}
-        </div>
+        padding: '8px 0',
+      }} className="reels-grid">
+        {reels.map(r => (
+          <ReelEmbed key={r.code} reel={r} />
+        ))}
       </div>
     </div>
   )
@@ -994,11 +1017,13 @@ export default function Projects() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) {
-          .reels-layout { grid-template-columns: 1fr !important; }
+        @media (max-width: 1100px) {
+          .reels-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+        @media (max-width: 700px) {
           .reels-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 560px) {
+        @media (max-width: 460px) {
           .reels-grid { grid-template-columns: 1fr !important; }
           .proj-tabs button { font-size: 0.78rem !important; padding: 7px 14px !important; }
         }
