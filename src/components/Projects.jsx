@@ -631,33 +631,145 @@ function ProjectCard({ p, onOpenLP, onOpenLightbox }) {
   )
 }
 
-function VideoPlaceholder() {
+const reels = [
+  {
+    code: 'DZbIsFNJYwA',
+    title: 'Reel 1',
+    client: '@matheusneryoficial',
+    tags: ['Reels', 'Social Media'],
+    color: '#e1306c',
+  },
+  {
+    code: 'DZs5Piap6bi',
+    title: 'Reel 2',
+    client: '@matheusneryoficial',
+    tags: ['Reels', 'Social Media'],
+    color: '#833ab4',
+  },
+  {
+    code: 'DYCvT-HgXr-',
+    title: 'Reel 3',
+    client: '@matheusneryoficial',
+    tags: ['Reels', 'Social Media'],
+    color: '#f97316',
+  },
+  {
+    code: 'DYSh1mtp3aZ',
+    title: 'Reel 4',
+    client: '@matheusneryoficial',
+    tags: ['Reels', 'Social Media'],
+    color: '#38bdf8',
+  },
+  {
+    code: 'DWwDpvOBodW',
+    title: 'Reel 5',
+    client: '@matheusneryoficial',
+    tags: ['Reels', 'Social Media'],
+    color: '#22c55e',
+  },
+]
+
+function ReelCard({ reel }) {
+  const [loaded, setLoaded] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+
   return (
     <div style={{
-      gridColumn: '1 / -1',
-      padding: '64px 32px',
       background: 'var(--bg-card)',
       borderRadius: '20px',
-      border: '1px dashed var(--border)',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      gap: '16px', textAlign: 'center',
+      border: '1px solid var(--border)',
+      overflow: 'hidden',
+      transition: 'all 0.3s ease',
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.borderColor = reel.color
+      e.currentTarget.style.boxShadow = `0 20px 60px ${reel.color}33`
+      e.currentTarget.style.transform = 'translateY(-4px)'
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.borderColor = 'var(--border)'
+      e.currentTarget.style.boxShadow = 'none'
+      e.currentTarget.style.transform = 'translateY(0)'
     }}>
+      {/* Instagram embed */}
       <div style={{
-        width: '64px', height: '64px', borderRadius: '16px',
-        background: 'linear-gradient(135deg, #7c3aed22, #c026d322)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+        paddingTop: '177%', // 9:16 ratio
+        background: '#000',
+        overflow: 'hidden',
       }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" strokeWidth="1.5">
-          <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-        </svg>
+        {!loaded && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '12px',
+            background: `linear-gradient(135deg, ${reel.color}22, #0a0a0f)`,
+          }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '50%',
+              border: `3px solid ${reel.color}`,
+              borderTopColor: 'transparent',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.78rem' }}>Carregando reel...</p>
+          </div>
+        )}
+        <iframe
+          src={`https://www.instagram.com/reel/${reel.code}/embed/`}
+          style={{
+            position: 'absolute', top: 0, left: 0,
+            width: '100%', height: '100%',
+            border: 'none',
+            opacity: loaded ? 1 : 0,
+            transition: 'opacity 0.4s',
+          }}
+          allowFullScreen
+          scrolling="no"
+          onLoad={() => setLoaded(true)}
+        />
       </div>
-      <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-        Vídeos & Reels em breve
-      </h3>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '400px', lineHeight: 1.7 }}>
-        Conteúdos em vídeo para redes sociais — reels, motion e edições criativas serão adicionados aqui em breve.
-      </p>
+
+      {/* Info bar */}
+      <div style={{
+        padding: '14px 16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '28px', height: '28px', borderRadius: '50%',
+            background: `linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="white">
+              <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
+              <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+            </svg>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600 }}>{reel.client}</p>
+        </div>
+        <a
+          href={`https://www.instagram.com/reel/${reel.code}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '5px',
+            padding: '5px 12px', borderRadius: '100px',
+            background: `${reel.color}22`, color: reel.color,
+            border: `1px solid ${reel.color}44`,
+            fontSize: '0.72rem', fontWeight: 700,
+            textDecoration: 'none', whiteSpace: 'nowrap',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = `${reel.color}44`}
+          onMouseLeave={e => e.currentTarget.style.background = `${reel.color}22`}
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+          </svg>
+          Ver no Instagram
+        </a>
+      </div>
     </div>
   )
 }
@@ -701,7 +813,11 @@ export default function Projects() {
         }}>
           {categories.map(cat => {
             const isActive = activeCategory === cat.id
-            const count = cat.id === 'todos' ? projects.length : projects.filter(p => p.category === cat.id).length
+            const count = cat.id === 'todos'
+              ? projects.length + reels.length
+              : cat.id === 'videos'
+              ? reels.length
+              : projects.filter(p => p.category === cat.id).length
             return (
               <button
                 key={cat.id}
@@ -746,7 +862,7 @@ export default function Projects() {
           }}
         >
           {activeCategory === 'videos' ? (
-            <VideoPlaceholder />
+            reels.map(r => <ReelCard key={r.code} reel={r} />)
           ) : filtered.map(p => (
             <ProjectCard
               key={p.id}
@@ -762,6 +878,7 @@ export default function Projects() {
         @media (max-width: 640px) {
           .proj-tabs button { font-size: 0.78rem !important; padding: 7px 14px !important; }
         }
+        @keyframes spin { to { transform: rotate(360deg) } }
       `}</style>
     </section>
   )
