@@ -669,218 +669,200 @@ const reels = [
   },
 ]
 
-function ReelEmbed({ reel, featured = false }) {
-  const [loaded, setLoaded] = useState(false)
+function ReelCard({ reel }) {
+  const [hovered, setHovered] = useState(false)
+
+  // Unique abstract pattern per reel using SVG paths
+  const patterns = [
+    <><circle cx="30" cy="80" r="60" fill="none" stroke="white" strokeWidth="1" opacity="0.12"/><circle cx="30" cy="80" r="100" fill="none" stroke="white" strokeWidth="1" opacity="0.07"/><circle cx="30" cy="80" r="140" fill="none" stroke="white" strokeWidth="1" opacity="0.04"/></>,
+    <><line x1="0" y1="40" x2="200" y2="200" stroke="white" strokeWidth="1" opacity="0.1"/><line x1="0" y1="80" x2="200" y2="240" stroke="white" strokeWidth="1" opacity="0.07"/><line x1="0" y1="120" x2="200" y2="280" stroke="white" strokeWidth="1" opacity="0.05"/><line x1="40" y1="0" x2="200" y2="160" stroke="white" strokeWidth="1" opacity="0.08"/></>,
+    <><rect x="-20" y="20" width="80" height="80" rx="8" fill="none" stroke="white" strokeWidth="1" opacity="0.1" transform="rotate(20)"/><rect x="60" y="80" width="60" height="60" rx="8" fill="none" stroke="white" strokeWidth="1" opacity="0.07" transform="rotate(35)"/><rect x="120" y="10" width="100" height="100" rx="8" fill="none" stroke="white" strokeWidth="1" opacity="0.05" transform="rotate(-10)"/></>,
+    <><path d="M0 100 Q50 50 100 100 Q150 150 200 100" fill="none" stroke="white" strokeWidth="1.5" opacity="0.12"/><path d="M0 140 Q50 90 100 140 Q150 190 200 140" fill="none" stroke="white" strokeWidth="1.5" opacity="0.07"/><path d="M0 60 Q50 10 100 60 Q150 110 200 60" fill="none" stroke="white" strokeWidth="1.5" opacity="0.05"/></>,
+    <><polygon points="100,10 180,80 150,170 50,170 20,80" fill="none" stroke="white" strokeWidth="1" opacity="0.1"/><polygon points="100,30 160,85 138,155 62,155 40,85" fill="none" stroke="white" strokeWidth="1" opacity="0.06"/></>,
+  ]
+
+  const patternIndex = reels.indexOf(reel) % patterns.length
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '16px',
-      height: '100%',
-    }}>
-      {/* Phone mockup frame */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: featured ? '260px' : '220px',
-        margin: '0 auto',
-        transition: 'transform 0.35s ease, filter 0.35s ease',
-        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)'
-        e.currentTarget.style.filter = `drop-shadow(0 30px 50px ${reel.color}55)`
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0) scale(1)'
-        e.currentTarget.style.filter = 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))'
-      }}>
-
-        {/* Phone shell */}
+    <a
+      href={`https://www.instagram.com/reel/${reel.code}/`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: 'none', display: 'block' }}
+    >
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          background: 'var(--bg-card)',
+          borderRadius: '20px',
+          border: `1px solid ${hovered ? reel.color : 'var(--border)'}`,
+          overflow: 'hidden',
+          transition: 'all 0.3s ease',
+          boxShadow: hovered ? `0 20px 60px ${reel.color}44` : 'none',
+          transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
+        }}
+      >
+        {/* Visual area — 9:16 ratio */}
         <div style={{
           position: 'relative',
-          borderRadius: '36px',
-          background: 'linear-gradient(160deg, #1e1e2e, #12121f)',
-          border: '2px solid rgba(255,255,255,0.1)',
-          padding: '12px 8px',
-          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05)',
+          paddingTop: '177%',
+          background: `linear-gradient(160deg, ${reel.color}ee 0%, ${reel.color}88 100%)`,
           overflow: 'hidden',
         }}>
-          {/* Notch */}
+          {/* Abstract SVG pattern */}
+          <svg
+            viewBox="0 0 200 355"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+            preserveAspectRatio="xMidYMid slice"
+          >
+            {patterns[patternIndex]}
+          </svg>
+
+          {/* Noise texture overlay */}
           <div style={{
-            position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
-            width: '60px', height: '6px', borderRadius: '3px',
-            background: 'rgba(255,255,255,0.15)', zIndex: 10,
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%)',
           }} />
 
-          {/* Screen — clips the iframe showing only the video */}
+          {/* Play button */}
           <div style={{
-            borderRadius: '28px',
-            overflow: 'hidden',
-            position: 'relative',
-            background: '#000',
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            {/* Crop wrapper: hides Instagram header (~13%) and footer (~15%) */}
             <div style={{
-              position: 'relative',
-              paddingTop: '177.77%',
-              overflow: 'hidden',
+              width: '56px', height: '56px', borderRadius: '50%',
+              background: hovered ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.85)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              transform: hovered ? 'scale(1.12)' : 'scale(1)',
+              boxShadow: hovered ? `0 8px 32px rgba(0,0,0,0.3)` : 'none',
             }}>
-              {/* Loading state */}
-              {!loaded && (
-                <div style={{
-                  position: 'absolute', inset: 0, zIndex: 2,
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center', gap: '14px',
-                  background: `linear-gradient(160deg, ${reel.color}25 0%, #080810 100%)`,
-                }}>
-                  <div style={{ position: 'relative', width: '44px', height: '44px' }}>
-                    <div style={{
-                      width: '44px', height: '44px', borderRadius: '50%',
-                      background: 'conic-gradient(from 0deg, #833ab4, #fd1d1d, #fcb045, #833ab4)',
-                      animation: 'spin 1.2s linear infinite',
-                    }} />
-                    <div style={{
-                      position: 'absolute', inset: '4px', borderRadius: '50%',
-                      background: '#080810',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
-                        <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
-                        <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
-                      </svg>
-                    </div>
-                  </div>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem' }}>Carregando...</p>
-                </div>
-              )}
-
-              {/* iframe shifted up to hide Instagram header, scaled to hide footer */}
-              <iframe
-                src={`https://www.instagram.com/reel/${reel.code}/embed/`}
-                style={{
-                  position: 'absolute',
-                  top: '-13%',
-                  left: 0,
-                  width: '100%',
-                  height: '128%',
-                  border: 'none',
-                  opacity: loaded ? 1 : 0,
-                  transition: 'opacity 0.5s ease',
-                  pointerEvents: loaded ? 'auto' : 'none',
-                }}
-                allowFullScreen
-                scrolling="no"
-                onLoad={() => setLoaded(true)}
-                title={reel.title}
-              />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill={reel.color}>
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
             </div>
           </div>
 
-          {/* Home indicator */}
+          {/* Instagram badge top-right */}
           <div style={{
-            width: '40px', height: '4px', borderRadius: '2px',
-            background: 'rgba(255,255,255,0.2)',
-            margin: '8px auto 0',
-          }} />
-        </div>
-      </div>
+            position: 'absolute', top: '12px', right: '12px',
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: 'rgba(0,0,0,0.35)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+              <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
+              <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+            </svg>
+          </div>
 
-      {/* Info below phone */}
-      <div style={{ textAlign: 'center', width: '100%' }}>
-        <p style={{
-          fontFamily: "'Space Grotesk', sans-serif",
-          fontWeight: 700,
-          fontSize: featured ? '0.95rem' : '0.82rem',
-          color: 'var(--text-primary)',
-          lineHeight: 1.3,
-          marginBottom: '8px',
-        }}>{reel.title}</p>
-        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '8px' }}>
-          {reel.tags.slice(0, 2).map(t => (
-            <span key={t} style={{
-              padding: '2px 8px', borderRadius: '100px',
-              fontSize: '0.65rem', fontWeight: 700,
-              background: `${reel.color}22`, color: reel.color,
-              border: `1px solid ${reel.color}44`,
-            }}>{t}</span>
-          ))}
+          {/* Reel label bottom-left */}
+          <div style={{
+            position: 'absolute', bottom: '12px', left: '12px',
+            display: 'flex', alignItems: 'center', gap: '5px',
+            background: 'rgba(0,0,0,0.4)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '100px', padding: '4px 10px',
+          }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+            </svg>
+            <span style={{ color: '#fff', fontSize: '0.65rem', fontWeight: 700 }}>Reel</span>
+          </div>
         </div>
-        <a
-          href={`https://www.instagram.com/reel/${reel.code}/`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '4px',
-            color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 600,
-            textDecoration: 'none', transition: 'color 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.color = reel.color}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-        >
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-          </svg>
-          Ver no Instagram
-        </a>
+
+        {/* Info footer */}
+        <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 700, fontSize: '0.88rem',
+            color: 'var(--text-primary)', lineHeight: 1.3,
+          }}>{reel.title}</p>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {reel.tags.slice(0, 2).map(t => (
+                <span key={t} style={{
+                  padding: '2px 8px', borderRadius: '100px',
+                  fontSize: '0.65rem', fontWeight: 700,
+                  background: `${reel.color}20`, color: reel.color,
+                  border: `1px solid ${reel.color}40`,
+                }}>{t}</span>
+              ))}
+            </div>
+            <span style={{
+              fontSize: '0.7rem', color: hovered ? reel.color : 'var(--text-muted)',
+              fontWeight: 600, transition: 'color 0.2s',
+              display: 'flex', alignItems: 'center', gap: '3px',
+            }}>
+              Assistir
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
+    </a>
   )
 }
 
 function ReelsSection() {
-  const featured = reels[0]
-  const rest = reels.slice(1)
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
 
-      {/* Header da seção */}
+      {/* Profile header */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '12px',
-        padding: '16px 20px',
+        display: 'flex', alignItems: 'center', gap: '16px',
+        padding: '20px 24px',
         background: 'var(--bg-card)',
-        borderRadius: '16px',
+        borderRadius: '20px',
         border: '1px solid var(--border)',
       }}>
+        {/* Avatar placeholder com gradiente Instagram */}
         <div style={{
-          width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
+          width: '52px', height: '52px', borderRadius: '50%', flexShrink: 0,
           background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '2px',
         }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-            <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
-            <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
-            <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
-          </svg>
+          <div style={{
+            width: '100%', height: '100%', borderRadius: '50%',
+            background: 'var(--bg-card)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.1rem', fontWeight: 800,
+            color: 'var(--text-primary)', fontFamily: "'Space Grotesk', sans-serif",
+          }}>MN</div>
         </div>
-        <div>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
-            Reels do Instagram
+
+        <div style={{ flex: 1 }}>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>
+            @matheusneryoficial
           </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            {reels.length} vídeos publicados em <span style={{ color: 'var(--accent-light)', fontWeight: 600 }}>@matheusneryoficial</span>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '2px' }}>
+            {reels.length} reels publicados · Social Media & Marketing
           </p>
         </div>
+
         <a
           href="https://www.instagram.com/matheusneryoficial/"
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '8px 16px', borderRadius: '100px',
+            display: 'flex', alignItems: 'center', gap: '7px',
+            padding: '10px 20px', borderRadius: '100px',
             background: 'linear-gradient(135deg, #833ab4, #fd1d1d)',
-            color: '#fff', fontSize: '0.8rem', fontWeight: 700,
+            color: '#fff', fontSize: '0.82rem', fontWeight: 700,
             textDecoration: 'none', whiteSpace: 'nowrap',
-            transition: 'opacity 0.2s',
+            transition: 'opacity 0.2s', flexShrink: 0,
           }}
           onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="white">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
             <rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/>
             <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
             <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
@@ -889,17 +871,14 @@ function ReelsSection() {
         </a>
       </div>
 
-      {/* Grid de todos os reels */}
+      {/* Reels grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(5, 1fr)',
-        gap: '32px',
+        gap: '16px',
         alignItems: 'start',
-        padding: '8px 0',
       }} className="reels-grid">
-        {reels.map(r => (
-          <ReelEmbed key={r.code} reel={r} />
-        ))}
+        {reels.map(r => <ReelCard key={r.code} reel={r} />)}
       </div>
     </div>
   )
