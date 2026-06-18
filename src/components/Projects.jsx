@@ -17,6 +17,22 @@ const projects = [
     ],
     featured: true,
   },
+  {
+    id: 'arena-flow',
+    title: 'Arena Flow — Social Media',
+    client: 'Sara Jandira SP',
+    description: 'Criação de conteúdo para o Arena Flow, culto mensal de evangelismo com identidade visual forte e editorial. Peças que capturam a atmosfera única do evento e geram engajamento orgânico.',
+    tags: ['Social Media', 'Fotografia', 'Design', 'Identidade Visual'],
+    color: '#38bdf8',
+    images: [
+      '/projects/arena-flow/1.jpg',
+      '/projects/arena-flow/2.jpg',
+      '/projects/arena-flow/3.jpg',
+      '/projects/arena-flow/4.jpg',
+      '/projects/arena-flow/5.jpg',
+    ],
+    featured: true,
+  },
 ]
 
 const placeholders = [
