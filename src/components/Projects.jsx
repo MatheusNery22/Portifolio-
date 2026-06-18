@@ -34,6 +34,22 @@ const projects = [
     featured: true,
   },
   {
+    id: 'conteudo-ia',
+    title: 'IA no Marketing — Conteúdo Próprio',
+    client: '@matheusneryoficial',
+    description: 'Carrossel criado para o Instagram pessoal sobre IA e o futuro do marketing. Storytelling visual com edições feitas com Inteligência Artificial — gerando debate e engajamento orgânico.',
+    tags: ['Conteúdo', 'IA', 'Copywriting', 'Design', 'Instagram'],
+    color: '#f59e0b',
+    images: [
+      '/projects/conteudo-ia/1.jpg',
+      '/projects/conteudo-ia/2.jpg',
+      '/projects/conteudo-ia/3.jpg',
+      '/projects/conteudo-ia/4.jpg',
+      '/projects/conteudo-ia/5.jpg',
+    ],
+    featured: true,
+  },
+  {
     id: 'festa-tabernaculos',
     title: 'Festa dos Tabernáculos',
     client: 'Sara Jandira SP',
