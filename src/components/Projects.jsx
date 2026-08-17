@@ -668,6 +668,16 @@ const reels = [
     color: '#22c55e',
   },
 ]
+const localVideos = [
+  {
+    id: 'captacao-colchao-eshop',
+    title: 'Captação Colchão — e-Shop Casa',
+    client: 'e-Shop Casa',
+    tags: ['Vídeo', 'Captação', 'E-commerce'],
+    color: '#7c3aed',
+    src: '/projects/captacao-colchao-eshop.mov',
+  },
+]
 
 function ReelCard({ reel }) {
   const [hovered, setHovered] = useState(false)
@@ -871,7 +881,7 @@ function ReelsSection() {
         </a>
       </div>
 
-      {/* Reels grid */}
+           {/* Reels grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(5, 1fr)',
@@ -880,6 +890,37 @@ function ReelsSection() {
       }} className="reels-grid">
         {reels.map(r => <ReelCard key={r.code} reel={r} />)}
       </div>
+
+      {localVideos.length > 0 && (
+        <div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+            Outros Vídeos
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="local-videos-grid">
+            {localVideos.map(v => (
+              <div key={v.id} style={{
+                background: 'var(--bg-card)', borderRadius: '20px',
+                border: '1px solid var(--border)', overflow: 'hidden',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = v.color; e.currentTarget.style.boxShadow = `0 20px 60px ${v.color}33`; e.currentTarget.style.transform = 'translateY(-4px)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <video src={v.src} controls style={{ width: '100%', display: 'block', maxHeight: '320px', background: '#000' }} />
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{v.title}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{v.client}</p>
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    {v.tags.map(t => (
+                      <span key={t} style={{ padding: '2px 8px', borderRadius: '100px', fontSize: '0.65rem', fontWeight: 700, background: `${v.color}20`, color: v.color, border: `1px solid ${v.color}40` }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
