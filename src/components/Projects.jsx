@@ -675,7 +675,7 @@ const localVideos = [
     client: 'e-Shop Casa',
     tags: ['Vídeo', 'Captação', 'E-commerce'],
     color: '#7c3aed',
-    src: '/projects/captacao-colchao-eshop.mov',
+    src: '/projects/captacao-colchao-eshop.mp4',
   },
 ]
 
